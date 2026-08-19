@@ -405,10 +405,16 @@
 <!-- PRELOADER -->
 <div class="pre" id="pre" aria-hidden="true">
   <div class="pre__iris" id="preIris"></div>
-  <div class="pre__k" id="preK">六眼</div>
+  <div class="pre__k" id="preK">JESSY♡</div>
   <div class="pre__sub" id="preSub">DOMINIO DE · JESSY</div>
   <div class="pre__bar"><i id="preFill"></i></div>
 </div>
+
+<!-- Audio -->
+<audio id="bgMusic" preload="auto" autoplay loop>
+  <source src="./audio/jessy.mp3" type="audio/mpeg">
+</audio>
+
 
 <!-- HUD -->
 <div class="hud hud--top">
@@ -566,10 +572,29 @@
      hooks[name] = { enter:function(dir){}, reverse:function(done){} } */
   var hooks = {};
 
-  /* ===== user-gesture gate for audio ===== */
+  /* ===== background music + user-gesture gate for audio ===== */
+  var bgMusic=document.getElementById('bgMusic');
   var userInteracted=false;
+
+  function startBgMusic(){
+    if(!bgMusic) return;
+    bgMusic.loop=true;
+    var p=bgMusic.play();
+    if(p && p.catch) p.catch(function(){
+      /* Autoplay with sound may be blocked until the first user gesture. */
+    });
+  }
+
+  /* Try immediately. If the browser blocks it, the first interaction retries it. */
+  startBgMusic();
+  addEventListener('load',startBgMusic,{once:true});
+
   ['pointerdown','touchstart','keydown','wheel'].forEach(function(ev){
-    addEventListener(ev,function(){userInteracted=true;},{once:true,passive:true});});
+    addEventListener(ev,function(){
+      userInteracted=true;
+      startBgMusic();
+    },{once:true,passive:true});
+  });
 
   /* ===== global interaction timestamp (idle detection) ===== */
   var lastInteract=performance.now();
